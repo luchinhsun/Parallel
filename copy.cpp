@@ -39,7 +39,8 @@ int main()
 
         t1 = clock();
 
-	#pragma acc parallel loop
+	#pragma acc data present(a, c);
+	#pragma acc parallel loop independent
         for (i=0; i<M*N; i++)
         c[i] = a[i];
 
