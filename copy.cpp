@@ -39,7 +39,7 @@ int main()
 
         t1 = clock();
 
-	#pragma acc data present(a, c);
+	#pragma acc data copyin(a[0:M*N]) copyout(c[0:M*N])
 	#pragma acc parallel loop independent
         for (i=0; i<M*N; i++)
         c[i] = a[i];
