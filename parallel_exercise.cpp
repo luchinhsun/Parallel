@@ -36,13 +36,13 @@ int main ()
 
         for (i=0; i<N; i++)
         x[i] = i;
-        //printf(" x = ");
-        //print_vector(x, N);
+        printf(" x = ");
+        print_vector(x, N);
 
         for (i=0; i<N; i++)
         y[i] = i+2;
-        //printf(" y = ");
-        //print_vector(y, N);
+        printf(" y = ");
+        print_vector(y, N);
 
         temp = sqrt(dot(x, x, N));
 
@@ -57,7 +57,8 @@ int main ()
         t2 = clock();
 
 	printf(" Time for CPU = %.10f s\n",(t2 - t1)/CLOCKS_PER_SEC);
-
+	printf(" Ans for CPU = ");
+	print_vector(y, N);
 
 
 
@@ -65,15 +66,15 @@ int main ()
 
 	for (i=0; i<N; i++)
 	x[i] = i;
-	//printf(" x = ");
-	//print_vector(x, N);
+	printf(" x = ");
+	print_vector(x, N);
 
 	for (i=0; i<N; i++)
 	y[i] = i+2;
-	//printf(" y = ");
-	//print_vector(y, N);
+	printf(" y = ");
+	print_vector(y, N);
 
-	#pragma acc data copyin(x[0:N], y[0:N]) copyout(y[0:N])
+	#pragma acc data copy(x[0:N], y[0:N]) //copyin(x[0:N], y[0:N]) copyout(y[0:N])
 	{
 		temp = sqrt(dot_gpu(x, x, N));
 
@@ -92,8 +93,8 @@ int main ()
 
 
 
-	//printf(" Ans = ");
-	//print_vector(y, N);
+	printf(" Ans for GPU = ");
+	print_vector(y, N);
 
 	printf(" Time for GPU = %.10f s\n",(t2 - t1)/CLOCKS_PER_SEC);
 
@@ -123,11 +124,11 @@ double dot(double *a, double *b, int N)
 
 double dot_gpu(double *a, double *b, int N)
 {
-	int i, j;
+	int i;
 	double temp;
 	#pragma acc data present(a, b) copyout(temp)
 	{
-		#pragma acc parallel loop(+:temp)
+		#pragma acc parallel loop reduction (+:temp)
 		for (i=0; i<N; i++)
 		temp += a[i] * b[i];
 	}
