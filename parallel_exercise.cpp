@@ -74,7 +74,7 @@ int main ()
 	printf(" y = ");
 	print_vector(y, N);
 
-	#pragma acc data copy(x[0:N], y[0:N]) //copyin(x[0:N], y[0:N]) copyout(y[0:N])
+	#pragma acc data copyin(x[0:N], y[0:N]) copyout(x[0:N], y[0:N])
 	{
 		temp = sqrt(dot_gpu(x, x, N));
 
@@ -116,6 +116,7 @@ double dot(double *a, double *b, int N)
 	int i;
 	double temp;
 
+	temp = 0.0;
 	for (i=0; i<N; i++)
 	temp += a[i] * b[i];
 
@@ -128,6 +129,8 @@ double dot_gpu(double *a, double *b, int N)
 	double temp;
 	#pragma acc data present(a, b) copyout(temp)
 	{
+		temp = 0.0;
+		#pragma acc update device(temp)
 		#pragma acc parallel loop reduction (+:temp)
 		for (i=0; i<N; i++)
 		temp += a[i] * b[i];
